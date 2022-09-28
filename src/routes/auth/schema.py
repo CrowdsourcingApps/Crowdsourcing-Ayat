@@ -8,5 +8,5 @@ class Token(BaseModel):
 
 
 class UserOutSchema(BaseModel):
-    id: int
+    user_id: str
     user_email: str
