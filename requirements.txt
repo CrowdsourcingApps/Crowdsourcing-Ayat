@@ -1,5 +1,8 @@
 fastapi==0.85.0
 uvicorn==0.18.3
+Pyrebase4==4.5.0
+firebase-admin==5.4.0
+python-multipart==0.0.5
 flake8==5.0.4
 bandit==1.7.4
 wily==1.23.0
