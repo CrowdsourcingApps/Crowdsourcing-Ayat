@@ -19,5 +19,4 @@ repos:
             "flake8-quotes==3.2.0",
             "flake8-print==4.0.0",
             "flake8-logging-format==0.6.0",
-            "flake8-sfs==0.0.3",
           ]
