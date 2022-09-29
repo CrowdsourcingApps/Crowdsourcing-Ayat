@@ -3,6 +3,7 @@ import json
 import firebase_admin
 import pyrebase
 from firebase_admin import credentials
+from minio import Minio
 
 from src.settings import settings
 
@@ -12,3 +13,17 @@ firbase = pyrebase.initialize_app(
     json.load(open(settings.FIREBASE_CONFIG_PATH)))
 
 db = firbase.database()
+
+minio_client = Minio(
+    settings.MINIO_SERVER,
+    access_key=settings.MINIO_ACCESS_KEY,
+    secret_key=settings.MINIO_SECRET_KEY,
+    secure=False
+)
+
+bucket_name = settings.MINIO_BUCKET_NAME
+
+# Create the bucket if not exist
+found = minio_client.bucket_exists(bucket_name)
+if not found:
+    minio_client.make_bucket(bucket_name)

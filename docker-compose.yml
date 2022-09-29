@@ -1,6 +1,20 @@
 version: '3.4'
 
 services:
+  minio:
+    image: minio/minio:RELEASE.2022-09-22T18-57-27Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY} 
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    command: server --console-address ":9001" /data
+    networks:
+      - backend
+
   crowdsourcingayat:
     image: crowdsourcingayat
     build:
@@ -10,3 +24,12 @@ services:
       - 8000:8000
     env_file:
       - ./.env
+    depends_on:
+      - minio
+    networks:
+      - backend
+
+volumes:
+  minio_storage: {}
+networks:
+  backend:
