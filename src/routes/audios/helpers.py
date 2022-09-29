@@ -1,3 +1,5 @@
+from typing import BinaryIO
+
 from src.dependencies import minio_client
 from src.settings import settings
 
@@ -11,3 +13,9 @@ def upload_file(new_file_name: str, audio_file: int) -> bool:
     except Exception:
         # TODO log the exception
         return False
+
+
+def valid_file_size(file: BinaryIO, file_size_limit: int) -> bool:
+    # TODO
+    valid = True
+    return valid

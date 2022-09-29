@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
 from src.routes.audios.handler import add_audio
-from src.routes.audios.helpers import upload_file
+from src.routes.audios.helpers import upload_file, valid_file_size
 from src.routes.audios.schema import (AudioMetaData, AudioMetaDataIn,
                                       UploadOutSchema)
 from src.routes.users.handler import get_user
@@ -26,7 +26,7 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="audio file name shoudn't contains dots",
         )
-    # TODO: limit file size and throw exception if it's too big
+
     if not audio_file.content_type.startswith('audio'):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -47,6 +47,15 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='only acc format is supported for IOS',
             )
+
+    # TODO: limit file size and throw exception if it's too big
+    max_upload_size = 2 * 1024 * 1024       # 2MB
+    valid = valid_file_size(audio_file.file, max_upload_size)
+    if not valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The audio file shouldn't exced 2MB",
+        )
     # TODO verified the content of the audio file using PyDub
     # upload the file to s3
     file_id = uuid.uuid4()
