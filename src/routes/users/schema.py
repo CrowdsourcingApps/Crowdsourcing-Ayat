@@ -2,6 +2,15 @@ from enum import Enum
 
 from pydantic import BaseModel
 
+from src.settings import countries
+
+
+class CountryEnum(str, Enum):
+    pass
+
+
+CountryEnum = CountryEnum('CountryEnum', dict(countries))
+
 
 class GenderEnum(str, Enum):
     Male = 'male'
@@ -11,7 +20,9 @@ class GenderEnum(str, Enum):
 class QiraahEnum(str, Enum):
     Hafs = 'hafs'
     Warsh = 'warsh'
+    Kalon = 'kalon'
     Other = 'other'
+    DontKnow = 'dont_know'
 
 
 class PlatformEnum(str, Enum):
@@ -24,6 +35,6 @@ class UserMetaData(BaseModel):
     client_id: str
     age: int = None
     gender: GenderEnum = None
-    country: str = None
+    country: CountryEnum = None
     qiraah: QiraahEnum = None
     platform: PlatformEnum

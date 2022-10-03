@@ -48,10 +48,13 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
     # upload the file to s3 and check that the file is uploaded successfully
     if upload_file(new_file_name, wav_file):
         # send Meta data to firbase
+        surra_number = audio_meta_data.surra_number
         audio_meta_data = AudioMetaData(client_id=audio_meta_data.client_id,
                                         sentence=audio_meta_data.sentence,
                                         audio_file_name=new_file_name,
-                                        duration_ms=audio_length_ms)
+                                        duration_ms=audio_length_ms,
+                                        surra_number=surra_number,
+                                        aya_number=audio_meta_data.aya_number)
         if add_audio(file_id, dict(audio_meta_data)):
             return {'file_name': new_file_name}
         else:

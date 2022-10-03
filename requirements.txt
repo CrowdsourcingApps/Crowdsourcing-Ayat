@@ -6,6 +6,7 @@ python-multipart==0.0.5
 pydub==0.25.1
 ffmpeg==1.4
 minio==7.1.12
+pycountry==22.3.5
 flake8==5.0.4
 bandit==1.7.4
 wily==1.23.0
