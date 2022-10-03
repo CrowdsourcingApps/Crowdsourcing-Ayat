@@ -11,7 +11,9 @@ class GenderEnum(str, Enum):
 class QiraahEnum(str, Enum):
     Hafs = 'hafs'
     Warsh = 'warsh'
+    Kalon = 'kalon'
     Other = 'other'
+    DontKnow = 'dont_know'
 
 
 class PlatformEnum(str, Enum):
