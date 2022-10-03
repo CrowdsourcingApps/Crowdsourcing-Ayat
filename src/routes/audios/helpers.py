@@ -20,9 +20,11 @@ def upload_file(new_file_name: str, audio_file_path: str) -> bool:
 
 
 def process_audio(file: BinaryIO) -> Tuple[int, str]:
-    """ Get the lenght of audio and convert it to wav"""
+    """ Get the lenght of audio and convert it to standarized wav"""
     temp: IO = NamedTemporaryFile(delete=False)
     audio_seg = AudioSegment.from_file(file)
+    audio_seg = audio_seg.set_channels(1)
+    audio_seg = audio_seg.set_frame_rate(16000)
     audio_seg.export(temp, format='wav')
     duration_ms = len(audio_seg)
     return duration_ms, temp.name
