@@ -13,7 +13,7 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install --no-cache-dir -r requirements.txt 
 RUN apt-get update && apt-get install -y \
-curl && apt-get clean
+curl && apt-get clean && apt-get install ffmpeg -y
 
 WORKDIR /app
 COPY . /app
