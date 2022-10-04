@@ -3,8 +3,8 @@ uvicorn==0.18.3
 Pyrebase4==4.5.0
 firebase-admin==5.4.0
 python-multipart==0.0.5
-pydub==0.25.1
 ffmpeg==1.4
+pydub==0.25.1
 minio==7.1.12
 pycountry==22.3.5
 flake8==5.0.4
