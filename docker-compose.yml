@@ -26,10 +26,14 @@ services:
       - ./.env
     depends_on:
       - minio
+    volumes:
+      - logging-data:/app/src/log_files
     networks:
       - backend
 
 volumes:
   minio_storage: {}
+  logging-data:
+
 networks:
   backend:
