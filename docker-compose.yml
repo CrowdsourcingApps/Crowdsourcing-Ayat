@@ -30,6 +30,15 @@ services:
       - logging-data:/app/src/log_files
     networks:
       - backend
+    secrets:
+      - firebase-adminsdk
+      - firebase-config
+
+secrets:
+  firebase-adminsdk:
+    file: crowdsourcing-ayat-app-firebase-adminsdk.json
+  firebase-config:
+    file: firebase-config.json
 
 volumes:
   minio_storage: {}
