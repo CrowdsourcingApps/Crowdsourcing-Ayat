@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from src.dependencies import firbase
 from src.dependencies.auth import firebase_authentication
 from src.routes.auth.schema import Token, UserOutSchema
+from src.settings.logging import logger
 
 router = APIRouter()
 
@@ -19,8 +20,9 @@ async def login_for_access_token(
     try:
         user = firbase.auth().sign_in_with_email_and_password(
             form_data.username, form_data.password)
-    except Exception:
-        # To do logging the exception
+    except Exception as ex:
+        logger.exception('[Firebase] - Authentication with Firebase failed:'
+                         f' {ex}')
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Incorrect email or password',

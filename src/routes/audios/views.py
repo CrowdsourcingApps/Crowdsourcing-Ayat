@@ -7,6 +7,7 @@ from src.routes.audios.helpers import process_audio, upload_file
 from src.routes.audios.schema import (AudioMetaData, AudioMetaDataIn,
                                       UploadOutSchema)
 from src.routes.users.handler import get_user
+from src.settings.logging import logger
 
 router = APIRouter()
 
@@ -33,9 +34,16 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
         )
 
     # limit audio file length and throw exception if it's too long
-    # convert audio file to wav
+    # Standarize audio file: wav, 16000Hz, one channel
     max_audio_length = 3 * 60000       # 3 min
-    audio_length_ms, wav_file = process_audio(audio_file.file)
+    try:
+        audio_length_ms, wav_file = process_audio(audio_file.file)
+    except Exception as ex:
+        logger.exception(f'[Pydub] - Unable to process audio file: {ex}')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Unable to process the audio file {audio_file.filename}',
+        )
     if audio_length_ms > max_audio_length:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
