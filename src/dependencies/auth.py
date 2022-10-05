@@ -19,10 +19,8 @@ def firebase_authentication(
         decoded_token = auth.verify_id_token(cred.credentials)
         uid = decoded_token['uid']
         email = decoded_token['email']
-        # Return the token or throw an exception or whatever
         return {'user_id': uid, 'user_email': email}
     except Exception as err:
-        # Todo logging
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=F'Invalid authentication credentials {err}',

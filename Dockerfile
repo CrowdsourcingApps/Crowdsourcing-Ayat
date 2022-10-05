@@ -25,7 +25,7 @@ RUN chmod 755 /app
 USER appuser
 
 # Healthcheack
-HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8000/ || exit 1  
+HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8000/docs || exit 1  
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 CMD ["uvicorn","src.main:app", "--reload","--host","0.0.0.0"]

@@ -5,6 +5,7 @@ from pydub import AudioSegment
 
 from src.dependencies import minio_client
 from src.settings import settings
+from src.settings.logging import logger
 
 
 def upload_file(new_file_name: str, audio_file_path: str) -> bool:
@@ -14,8 +15,9 @@ def upload_file(new_file_name: str, audio_file_path: str) -> bool:
             settings.MINIO_BUCKET_NAME, new_file_name, audio_file_path
         )
         return True
-    except Exception:
-        # TODO log the exception
+    except Exception as ex:
+        logger.exception('[MinIO] - Upload audio file to MinIo server'
+                         f' error: {ex}')
         return False
 
 
