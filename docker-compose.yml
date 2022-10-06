@@ -7,16 +7,16 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio_storage:/data
+      - minio-storage:/data
     environment:
-      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY} 
-      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+      MINIO_ROOT_USER: ${MINIO-ACCESS-KEY} 
+      MINIO_ROOT_PASSWORD: ${MINIO-SECRET-KEY}
     command: server --console-address ":9001" /data
     networks:
       - backend
 
   crowdsourcingayat:
-    image: crowdsourcingayat
+    image: raghadsy/crowdsourcingayat
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -30,18 +30,9 @@ services:
       - logging-data:/app/src/log_files
     networks:
       - backend
-    secrets:
-      - firebase-adminsdk
-      - firebase-config
-
-secrets:
-  firebase-adminsdk:
-    file: crowdsourcing-ayat-app-firebase-adminsdk.json
-  firebase-config:
-    file: firebase-config.json
 
 volumes:
-  minio_storage: {}
+  minio-storage: {}
   logging-data:
 
 networks:
