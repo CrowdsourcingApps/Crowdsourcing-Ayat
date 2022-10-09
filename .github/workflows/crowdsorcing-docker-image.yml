@@ -26,15 +26,9 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 src 
-        flake8 tests
     # - name: Test with pytest
     #   run: |
     #     pytest
-    - name: Prepare build file for Dockerfile
-      run: |
-        mkdir ./build
-        cp -r ./src ./build/src
-        cp -r ./tests ./build/tests
     - name: Login to DockerHub
       uses: docker/login-action@v2
       with:
