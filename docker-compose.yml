@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   minio:
-    image: minio/minio:RELEASE.2022-09-22T18-57-27Z
+    image: minio/minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -16,7 +16,7 @@ services:
       - backend
 
   crowdsourcingayat:
-    image: raghadsy/crowdsourcingayat
+    image: crowdsourcingayat
     build:
       context: .
       dockerfile: ./Dockerfile
