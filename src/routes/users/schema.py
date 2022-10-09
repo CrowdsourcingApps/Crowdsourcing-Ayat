@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from src.settings import countries
 
@@ -38,3 +38,9 @@ class UserMetaData(BaseModel):
     country: CountryEnum = None
     qiraah: QiraahEnum = None
     platform: PlatformEnum
+
+    @validator('age')
+    def age_greater_than_six(cls, v):
+        if v <= 6:
+            raise ValueError('age must be greater than six')
+        return v

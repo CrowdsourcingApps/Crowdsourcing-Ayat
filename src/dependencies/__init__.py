@@ -8,10 +8,13 @@ from minio import Minio
 from src.settings import settings
 from src.settings.logging import logger
 
-cred = credentials.Certificate(settings.FIREBASE_ADMIN_CRED_PATH)
+admin_sdk = json.loads(settings.ADMIN_SDK_SETTINGS, strict=False)
+cred = credentials.Certificate(admin_sdk)
 firbase_admin = firebase_admin.initialize_app(cred)
-firbase = pyrebase.initialize_app(
-    json.load(open(settings.FIREBASE_CONFIG_PATH)))
+
+firebase_setting = json.loads(settings.FIREBASE_SETTINGS, strict=False)
+
+firbase = pyrebase.initialize_app(firebase_setting)
 
 db = firbase.database()
 
