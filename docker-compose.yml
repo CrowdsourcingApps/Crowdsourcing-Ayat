@@ -27,7 +27,7 @@ services:
     depends_on:
       - minio
     volumes:
-      - logging-data:/app/src/log_files
+      - logging-data:/src/log_files
     networks:
       - backend
 
