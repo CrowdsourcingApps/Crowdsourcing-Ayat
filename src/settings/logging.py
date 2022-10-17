@@ -4,8 +4,8 @@ from pathlib import Path
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
-Path('/app/src/log_files').mkdir(parents=True, exist_ok=True)
-fh = logging.handlers.RotatingFileHandler('/app/src/log_files/server.log',
+Path('app/src/log_files').mkdir(parents=True, exist_ok=True)
+fh = logging.handlers.RotatingFileHandler('app/src/log_files/server.log',
                                           mode='a',
                                           maxBytes=100*1024,
                                           backupCount=3)
