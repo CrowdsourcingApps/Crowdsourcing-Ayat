@@ -1,8 +1,6 @@
-name: Crowdsourcing Docker Image CI
+name: Testing Crowdsourcing APP CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -29,14 +27,3 @@ jobs:
     # - name: Test with pytest
     #   run: |
     #     pytest
-    - name: Login to DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Build and push
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: true
-        tags: raghadsy/crowdsourcingayat
