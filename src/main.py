@@ -18,8 +18,8 @@ async def log_requests(request, call_next):
     if not health_check:
         idem = ''.join(random.choices(string.ascii_uppercase + string.digits,
                                       k=6))
-        logger.info(f'rid={idem} start - "{request.method}"'
-                    '"{request.url.path}"')
+        logger.info(f'rid={idem} start - "{request.method}" '
+                    f'"{request.url.path}"')
         start_time = time.time()
 
     response = await call_next(request)

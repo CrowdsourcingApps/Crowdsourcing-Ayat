@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 
 from pydantic import BaseModel, validator
@@ -31,7 +32,7 @@ class PlatformEnum(str, Enum):
     Web = 'web'
 
 
-class UserMetaData(BaseModel):
+class UserMetaDataCreate(BaseModel):
     client_id: str
     age: int = None
     gender: GenderEnum = None
@@ -44,3 +45,7 @@ class UserMetaData(BaseModel):
         if v <= 6:
             raise ValueError('age must be greater than six')
         return v
+
+
+class UserMetaData(UserMetaDataCreate):
+    create_date: datetime = datetime.now()
