@@ -48,4 +48,4 @@ class UserMetaDataCreate(BaseModel):
 
 
 class UserMetaData(UserMetaDataCreate):
-    create_date: datetime = datetime.now()
+    create_date: datetime

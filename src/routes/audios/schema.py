@@ -13,7 +13,7 @@ class AudioMetaDataIn(BaseModel):
 class AudioMetaData(AudioMetaDataIn):
     audio_file_name: str
     duration_ms: int
-    create_date: datetime = datetime.now()
+    create_date: datetime
 
 
 class UploadOutSchema(BaseModel):

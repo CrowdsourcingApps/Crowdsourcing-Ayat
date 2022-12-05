@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
@@ -67,7 +68,8 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
                                         audio_file_name=new_file_name,
                                         duration_ms=audio_length_ms,
                                         surra_number=surra_number,
-                                        aya_number=audio_meta_data.aya_number)
+                                        aya_number=audio_meta_data.aya_number,
+                                        create_date=datetime.now())
         audio_dict = dict(audio_meta_data)
         audio_dict['create_date'] = str(audio_dict['create_date'])
         if add_audio(file_id, audio_dict):

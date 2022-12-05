@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, status
 from starlette.responses import Response
 
@@ -12,7 +14,8 @@ router = APIRouter()
              responses={401: {'description': 'UNAUTHORIZED'},
                         400: {'description': 'BAD REQUEST'}})
 async def Add_new_participant(userIn: UserMetaDataCreate):
-    user = UserMetaData(**userIn.dict())
+
+    user = UserMetaData(**userIn.dict(), create_date=datetime.now())
     user_dict = dict(user)
     ''' The next line is to avoid  the TypeError:
                 "Object of type datetime is not JSON serializable"'''
