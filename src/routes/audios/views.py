@@ -36,7 +36,7 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
 
     # limit audio file length and throw exception if it's too long
     # Standarize audio file: wav, 16000Hz, one channel
-    max_audio_length = 3 * 60000       # 3 min
+    max_audio_length = 30000       # 30 sec
     min_audio_length = 500             # 0.5 sec
     try:
         audio_length_ms, wav_file = process_audio(audio_file.file)
@@ -49,7 +49,7 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
     if audio_length_ms > max_audio_length:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The audio file shouldn't exced 3 Min",
+            detail="The audio file shouldn't exced 30 Sec",
         )
     if audio_length_ms < min_audio_length:
         raise HTTPException(

@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from src.settings import countries
 
@@ -32,19 +32,22 @@ class PlatformEnum(str, Enum):
     Web = 'web'
 
 
+class AgeEnum(str, Enum):
+    Under_14 = 'under_14'
+    between_14_18 = '14-18'
+    between_19_24 = '19-24'
+    between_25_32 = '25-32'
+    between_33_40 = '33-40'
+    Above_40 = 'above_40'
+
+
 class UserMetaDataCreate(BaseModel):
     client_id: str
-    age: int = None
+    age: AgeEnum = None
     gender: GenderEnum = None
     country: CountryEnum = None
     qiraah: QiraahEnum = None
     platform: PlatformEnum
-
-    @validator('age')
-    def age_greater_than_six(cls, v):
-        if v <= 6:
-            raise ValueError('age must be greater than six')
-        return v
 
 
 class UserMetaData(UserMetaDataCreate):
