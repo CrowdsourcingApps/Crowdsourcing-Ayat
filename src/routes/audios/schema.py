@@ -14,6 +14,7 @@ class AudioMetaData(AudioMetaDataIn):
     audio_file_name: str
     duration_ms: int
     create_date: datetime
+    surra_aya: str = None
 
 
 class UploadOutSchema(BaseModel):

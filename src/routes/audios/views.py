@@ -63,13 +63,16 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
     if upload_file(new_file_name, wav_file):
         # send Meta data to firbase
         surra_number = audio_meta_data.surra_number
+        aya_number = audio_meta_data.aya_number
+        surra_aya = str(surra_number)+'-'+str(aya_number)
         audio_meta_data = AudioMetaData(client_id=audio_meta_data.client_id,
                                         sentence=audio_meta_data.sentence,
                                         audio_file_name=new_file_name,
                                         duration_ms=audio_length_ms,
                                         surra_number=surra_number,
-                                        aya_number=audio_meta_data.aya_number,
-                                        create_date=datetime.now())
+                                        aya_number=aya_number,
+                                        create_date=datetime.now(),
+                                        surra_aya=surra_aya)
         audio_dict = dict(audio_meta_data)
         audio_dict['create_date'] = str(audio_dict['create_date'])
         if add_audio(file_id, audio_dict):
