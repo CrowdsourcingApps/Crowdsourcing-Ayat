@@ -15,7 +15,7 @@ router = APIRouter()
              response_model=UserMetaData,
              responses={401: {'description': 'UNAUTHORIZED'},
                         400: {'description': 'BAD REQUEST'}})
-async def Add_new_participant(userIn: UserMetaDataCreate):
+async def Add_new_reciter(userIn: UserMetaDataCreate):
 
     user = UserMetaData(**userIn.dict(), create_date=datetime.now(),
                         client_id=str(uuid.uuid4()))
@@ -36,7 +36,7 @@ async def Add_new_participant(userIn: UserMetaDataCreate):
             responses={401: {'userIddescription': 'UNAUTHORIZED'},
                        400: {'description': 'BAD REQUEST'},
                        404: {'description': 'NOT FOUND'}})
-async def update_participant(userId: str, userIn: UserMetaDataCreate):
+async def update_reciter_info(userId: str, userIn: UserMetaDataCreate):
     # check if the user with userId is exist
     user = get_user(userId)
     if user is None:
