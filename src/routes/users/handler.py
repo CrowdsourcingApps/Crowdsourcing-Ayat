@@ -13,6 +13,16 @@ def add_user(user: dict) -> bool:
         return False
 
 
+def update_user(user: dict) -> bool:
+    try:
+        db.child('users').child(user['client_id']).update(user)
+        return True
+    except Exception as ex:
+        logger.exception('[Firebase] - Update new user error:'
+                         f' {ex}')
+        return False
+
+
 def get_user(client_id: str) -> UserMetaData:
     try:
         user_info = db.child('users').child(client_id).get()

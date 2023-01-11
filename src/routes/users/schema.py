@@ -42,7 +42,6 @@ class AgeEnum(str, Enum):
 
 
 class UserMetaDataCreate(BaseModel):
-    client_id: str
     age: AgeEnum = None
     gender: GenderEnum = None
     country: CountryEnum = None
@@ -51,4 +50,5 @@ class UserMetaDataCreate(BaseModel):
 
 
 class UserMetaData(UserMetaDataCreate):
-    create_date: datetime
+    create_date: datetime = None
+    client_id: str
