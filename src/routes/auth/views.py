@@ -1,3 +1,4 @@
+import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -5,34 +6,10 @@ from src.dependencies import firbase
 from src.dependencies.auth import firebase_authentication
 from src.routes.auth.handler import add_participant, get_participant
 from src.routes.auth.schema import Token, UserInSchema, UserOutSchema
+from src.settings import settings
 from src.settings.logging import logger
 
 router = APIRouter()
-
-
-@router.post(
-    '/token',
-    response_model=Token,
-    status_code=200,
-    responses={401: {'description': 'UNAUTHORIZED'}},
-)
-async def login_for_access_token(
-        form_data: OAuth2PasswordRequestForm = Depends()):
-    try:
-        user = firbase.auth().sign_in_with_email_and_password(
-            form_data.username, form_data.password)
-    except Exception as ex:
-        logger.exception('[Firebase] - Authentication with Firebase failed:'
-                         f' {ex}')
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Incorrect email or password',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-    jwt = user['idToken']
-    refresh_token = user['refreshToken']
-    response = Token(access_token=jwt, refresh_token=refresh_token)
-    return response
 
 
 @router.post(
@@ -69,6 +46,63 @@ async def sign_up(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Email is already exists',
             headers={'WWW-Authenticate': 'Bearer'},
+        )
+
+
+@router.post(
+    '/token',
+    response_model=Token,
+    status_code=200,
+    responses={401: {'description': 'UNAUTHORIZED'}},
+)
+async def login_for_access_token(
+        form_data: OAuth2PasswordRequestForm = Depends()):
+    try:
+        user = firbase.auth().sign_in_with_email_and_password(
+            form_data.username, form_data.password)
+    except Exception as ex:
+        logger.exception('[Firebase] - Authentication with Firebase failed:'
+                         f' {ex}')
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Incorrect email or password',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
+    jwt = user['idToken']
+    refresh_token = user['refreshToken']
+    response = Token(access_token=jwt, refresh_token=refresh_token)
+    return response
+
+
+@router.post(
+    '/token/refresh',
+    response_model=Token,
+    status_code=200,
+    responses={401: {'description': 'UNAUTHORIZED'}},
+)
+async def refresh_token(refresh_token: str):
+    api_key = settings.get_firebase_settings()['apiKey']
+    url = f'https://securetoken.googleapis.com/v1/token?key={api_key}'
+    # The data to be sent in the request body
+    data = {
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token
+    }
+    # Make a POST request to the ID token URL
+    try:
+        response = requests.post(url, data=data)
+        # Get the new ID token from the response
+        response = response.json()
+        new_id_token = response['id_token']
+        response = Token(access_token=new_id_token,
+                         refresh_token=refresh_token)
+        return response
+    except Exception as ex:
+        logger.exception('[Firebase] - Refresh token failed:'
+                         f' {ex}')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Invalid refresh token'
         )
 
 
