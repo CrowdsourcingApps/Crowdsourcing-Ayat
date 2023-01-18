@@ -2,13 +2,15 @@ from src.dependencies import db
 from src.routes.users.schema import UserMetaData
 from src.settings.logging import logger
 
+""" This handler is resposible for adding reciter data"""
+
 
 def add_user(user: dict) -> bool:
     try:
         db.child('users').child(user['client_id']).set(user)
         return True
     except Exception as ex:
-        logger.exception('[Firebase] - Add new user to users node error:'
+        logger.exception('[Firebase] - Add new reciter to users node error:'
                          f' {ex}')
         return False
 
@@ -18,7 +20,7 @@ def update_user(user: dict) -> bool:
         db.child('users').child(user['client_id']).update(user)
         return True
     except Exception as ex:
-        logger.exception('[Firebase] - Update new user error:'
+        logger.exception('[Firebase] - Update new reciter error:'
                          f' {ex}')
         return False
 

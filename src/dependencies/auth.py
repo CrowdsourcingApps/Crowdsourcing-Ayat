@@ -18,8 +18,7 @@ def firebase_authentication(
     try:
         decoded_token = auth.verify_id_token(cred.credentials)
         uid = decoded_token['uid']
-        email = decoded_token['email']
-        return {'user_id': uid, 'user_email': email}
+        return uid
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
