@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from src.dependencies import firbase
 from src.dependencies.auth import firebase_authentication
-from src.routes.auth.handler import add_participant
+from src.routes.auth.handler import add_participant, get_participant
 from src.routes.auth.schema import Token, UserInSchema, UserOutSchema
 from src.settings.logging import logger
 
@@ -78,5 +78,12 @@ async def sign_up(
     status_code=200,
     responses={401: {'description': 'UNAUTHORIZED'}}
 )
-async def get_user_info(user=Depends(firebase_authentication)):
-    return user
+async def get_user_info(user_id=Depends(firebase_authentication)):
+    # get the additional data for this participants
+    participant = get_participant(user_id)
+    if participant is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'There is no participant with id {user_id}',
+        )
+    return participant
