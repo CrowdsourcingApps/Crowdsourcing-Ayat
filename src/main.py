@@ -1,5 +1,4 @@
-import random
-import string
+import secrets
 import time
 
 from fastapi import FastAPI
@@ -16,8 +15,10 @@ async def log_requests(request, call_next):
     # do not register healthcheck
     health_check = request.url.path.__contains__('docs')
     if not health_check:
-        idem = ''.join(random.choices(string.ascii_uppercase + string.digits,
-                                      k=6))
+        """Comment idem because it is not secure according to bandit"""
+        """ idem = ''.join(random.choices(
+            string.ascii_uppercase + string.digits,k=6))"""
+        idem = secrets.token_hex(3)
         logger.info(f'rid={idem} start - "{request.method}" '
                     f'"{request.url.path}"')
         start_time = time.time()
