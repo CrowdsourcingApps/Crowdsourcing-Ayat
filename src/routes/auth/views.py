@@ -6,9 +6,10 @@ from starlette.responses import Response
 from src.dependencies import firbase
 from src.dependencies.auth import firebase_authentication
 from src.routes.auth.handler import (add_participant, get_participant,
+                                     get_participant_by_email,
                                      update_participant)
-from src.routes.auth.schema import (Token, UserInSchema, UserOutSchema,
-                                    UserUpdateSchema)
+from src.routes.auth.schema import (MessageSchema, Token, UserInSchema,
+                                    UserOutSchema, UserUpdateSchema)
 from src.settings import settings
 from src.settings.logging import logger
 
@@ -86,7 +87,8 @@ async def login_for_access_token(
 )
 async def refresh_token(refresh_token: str):
     api_key = settings.get_firebase_settings()['apiKey']
-    url = f'https://securetoken.googleapis.com/v1/token?key={api_key}'
+    # url = f'https://securetoken.googleapis.com/v1/token?key={api_key}'
+    url = 'https://securetoken.googleapis.com/v1/token'
     # The data to be sent in the request body
     data = {
         'grant_type': 'refresh_token',
@@ -94,7 +96,10 @@ async def refresh_token(refresh_token: str):
     }
     # Make a POST request to the ID token URL
     try:
-        response = requests.post(url, data=data)
+        response = requests.post(
+            url,
+            data=data,
+            headers={'X-goog-api-key': api_key})
         # Get the new ID token from the response
         response = response.json()
         new_id_token = response['id_token']
@@ -152,3 +157,43 @@ async def update_participant_info(participant_data: UserUpdateSchema,
         return participant
     else:
         return Response(status_code=status.HTTP_400_BAD_REQUEST)
+
+
+@router.post(
+    '/reset_password',
+    response_model=MessageSchema,
+    status_code=200,
+    responses={404: {'description': 'NOT FOUND'},
+               400: {'description': 'BAD REQUEST'}}
+)
+async def send_email_for_reset_password(email: str):
+    # check if the email already exist
+    if get_participant_by_email(email):
+        data = {
+            'email': email,
+            'requestType': 'PASSWORD_RESET'
+        }
+        try:
+            base_url = 'https://identitytoolkit.googleapis.com/v1/accounts'
+            api_key = settings.get_firebase_settings()['apiKey']
+            endpoint = 'sendOobCode'
+            url = f'{base_url}:{endpoint}'
+            response = requests.post(
+                url,
+                json=data,
+                headers={'Content-Type': 'application/json',
+                         'X-goog-api-key': api_key}
+            )
+            response.raise_for_status()
+            return MessageSchema(info='Password reset email sent.')
+        except Exception as ex:
+            logger.exception('[Firebase] - Send email for reset password '
+                             f'error: {ex}')
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Error while sending email for reset the password'
+            )
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f'There is no participant with email {email}',
+    )

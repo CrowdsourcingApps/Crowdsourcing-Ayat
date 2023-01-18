@@ -43,3 +43,11 @@ def get_participant(user_id: str) -> UserOutSchema:
         logger.exception('[Firebase] - get participant from participants'
                          f'node error: {ex}')
         return None
+
+
+def get_participant_by_email(email: str) -> bool:
+    node = db.child('participants')
+    participant = node.order_by_child('user_email').equal_to(email).get()
+    if participant:
+        return True
+    return False

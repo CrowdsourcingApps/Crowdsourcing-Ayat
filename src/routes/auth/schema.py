@@ -23,3 +23,7 @@ class UserOutSchema(UserUpdateSchema):
 class UserInSchema(BaseModel):
     user_email: str
     password: str
+
+
+class MessageSchema(BaseModel):
+    info: str
