@@ -1,11 +1,14 @@
 import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette.responses import Response
 
 from src.dependencies import firbase
 from src.dependencies.auth import firebase_authentication
-from src.routes.auth.handler import add_participant, get_participant
-from src.routes.auth.schema import Token, UserInSchema, UserOutSchema
+from src.routes.auth.handler import (add_participant, get_participant,
+                                     update_participant)
+from src.routes.auth.schema import (Token, UserInSchema, UserOutSchema,
+                                    UserUpdateSchema)
 from src.settings import settings
 from src.settings.logging import logger
 
@@ -78,7 +81,8 @@ async def login_for_access_token(
     '/token/refresh',
     response_model=Token,
     status_code=200,
-    responses={401: {'description': 'UNAUTHORIZED'}},
+    responses={401: {'description': 'UNAUTHORIZED'},
+               400: {'description': 'BAD REQUEST'}},
 )
 async def refresh_token(refresh_token: str):
     api_key = settings.get_firebase_settings()['apiKey']
@@ -110,9 +114,10 @@ async def refresh_token(refresh_token: str):
     '/me',
     response_model=UserOutSchema,
     status_code=200,
-    responses={401: {'description': 'UNAUTHORIZED'}}
+    responses={401: {'description': 'UNAUTHORIZED'},
+               404: {'description': 'NOT FOUND'}}
 )
-async def get_user_info(user_id=Depends(firebase_authentication)):
+async def get_participant_info(user_id=Depends(firebase_authentication)):
     # get the additional data for this participants
     participant = get_participant(user_id)
     if participant is None:
@@ -121,3 +126,29 @@ async def get_user_info(user_id=Depends(firebase_authentication)):
             detail=f'There is no participant with id {user_id}',
         )
     return participant
+
+
+@router.put(
+    '/me/update',
+    response_model=UserOutSchema,
+    status_code=200,
+    responses={401: {'description': 'UNAUTHORIZED'},
+               404: {'description': 'NOT FOUND'}}
+)
+async def update_participant_info(participant_data: UserUpdateSchema,
+                                  user_id=Depends(firebase_authentication)):
+    # get the additional data for this participants
+    participant = get_participant(user_id)
+    if participant is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'There is no participant with id {user_id}',
+        )
+    participant_dict = dict(participant_data)
+    participant_dict['user_id'] = user_id
+    result = update_participant(participant_dict)
+    participant = UserOutSchema(**participant_data.dict(), user_id=user_id)
+    if result:
+        return participant
+    else:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST)

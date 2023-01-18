@@ -6,8 +6,7 @@ class Token(BaseModel):
     refresh_token: str
 
 
-class UserOutSchema(BaseModel):
-    user_id: str
+class UserUpdateSchema(BaseModel):
     user_email: str
     validate_correctness_accuracy: int = None
     transcription_accuracy: int = None
@@ -15,6 +14,10 @@ class UserOutSchema(BaseModel):
     number_validate_correctness_tasks: int = 0
     number_transcription_tasks: int = 0
     number_validate_transcription: int = 0
+
+
+class UserOutSchema(UserUpdateSchema):
+    user_id: str
 
 
 class UserInSchema(BaseModel):
