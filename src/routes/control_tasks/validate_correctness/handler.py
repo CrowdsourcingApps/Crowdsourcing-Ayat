@@ -21,4 +21,4 @@ def Add_validate_correctness_control_tasks_list(
     except Exception as ex:
         logger.exception('[Firebase] - Add new ValidateCorrectnessControlTask'
                          f'node error: {ex}')
-        return None
+        return False

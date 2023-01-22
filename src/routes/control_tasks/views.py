@@ -13,12 +13,12 @@ from src.routes.control_tasks.validate_correctness.schema import \
 router = APIRouter()
 
 
-@router.put('',
-            status_code=200,
-            responses={401: {'description': 'UNAUTHORIZED'},
-                       400: {'description': 'BAD REQUEST'},
-                       403: {'description': 'Forbidden'}})
-async def validate_correctness_control_tasks(
+@router.post('/validate_correctness',
+             status_code=200,
+             responses={401: {'description': 'UNAUTHORIZED'},
+                        400: {'description': 'BAD REQUEST'},
+                        403: {'description': 'Forbidden'}})
+async def add_validate_correctness_control_tasks(
         control_tasks: List[ValidateCorrectnessControlTask],
         user_id=Depends(firebase_authentication)) -> list:
     """ Add list of control tasks related to validate correctness task type"""
