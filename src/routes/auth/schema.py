@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
 
@@ -6,8 +8,15 @@ class Token(BaseModel):
     refresh_token: str
 
 
+class UserRoleEnum(str, Enum):
+    Admin = 'admin'
+    RecitingApp = 'reciting_app'
+    Annotator = 'annotator'
+
+
 class UserUpdateSchema(BaseModel):
     user_email: str
+    user_role: UserRoleEnum = UserRoleEnum.Annotator
 
     # number of validate correctness tasks that user solved
     validate_correctness_solved_tasks_no: int = 0

@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, FastAPI
 from src.dependencies.auth import firebase_authentication
 from src.routes.audios import views as audios_views
 from src.routes.auth import views as auth_views
+from src.routes.control_tasks import views as control_tasks_views
 from src.routes.users import views as users_views
 
 api_router = APIRouter()
@@ -14,6 +15,10 @@ api_router.include_router(users_views.router,
 api_router.include_router(audios_views.router,
                           tags=['Audios'],
                           prefix='/audios',
+                          dependencies=[Depends(firebase_authentication)])
+api_router.include_router(control_tasks_views.router,
+                          tags=['Control tasks'],
+                          prefix='/control_tasks',
                           dependencies=[Depends(firebase_authentication)])
 
 
