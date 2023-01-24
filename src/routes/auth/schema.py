@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 from pydantic import BaseModel
 
@@ -39,8 +40,24 @@ class UserUpdateSchema(BaseModel):
     validate_transcription_solved_control_correct_no: int = 0
 
 
+VALIDATE_CORRECTNESS_THRESHOLD = 0.8
+
+
 class UserOutSchema(UserUpdateSchema):
     user_id: str
+    validate_correctness_answered_questions_test: List[str] = []
+
+    def validate_correctness_accuracy(self):
+        if self.validate_correctness_solved_control_no == 0:
+            return 0
+        solved_all = self.validate_correctness_solved_control_no
+        solved_correct = self.validate_correctness_solved_control_correct_no
+        accuracy = solved_correct / solved_all
+        return accuracy
+
+    def validate_correctness_pass(self):
+        accuracy = self.validate_correctness_accuracy()
+        return accuracy >= VALIDATE_CORRECTNESS_THRESHOLD
 
 
 class UserInSchema(BaseModel):
