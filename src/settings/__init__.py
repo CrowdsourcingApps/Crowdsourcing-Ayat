@@ -13,8 +13,8 @@ def get_settings() -> Settings:
 
 @lru_cache
 def get_countries() -> List[Tuple[str, str]]:
-    return [(country.alpha_3,
-             country.alpha_3) for country in pycountry.countries]
+    return [(country.alpha_2,
+             country.alpha_2) for country in pycountry.countries]
 
 
 settings: Settings = get_settings()
