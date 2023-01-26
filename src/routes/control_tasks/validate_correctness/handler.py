@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+from functools import lru_cache
 from typing import List
 
 from src.dependencies import db
@@ -55,6 +56,7 @@ def get_validate_correctness_entrance_exam_list(
         test_questions += random.choices(ct_type3, k=1)
         test_questions += random.choices(ct_type4, k=1)
         test_questions += random.choices(ct_type5, k=1)
+
         try:
             obj_list = [VCCT(**test) for test in test_questions]
             return obj_list
@@ -65,4 +67,20 @@ def get_validate_correctness_entrance_exam_list(
     except Exception as ex:
         logger.exception('[Firebase] - get contol tasks from validate '
                          f'correctness control tasks node error: {ex}')
+        return None
+
+
+@lru_cache(maxsize=50)
+def get_control_task_question_label(recording_id: str) -> LabelEnum:
+    try:
+        dbnode = db.child('validate_correctness_control_tasks')
+        question = dbnode.child(recording_id).get()
+        if question.pyres is None:
+            return None
+        label = question.val()['label']
+        return label
+    except Exception as ex:
+        logger.exception('[Firebase] - get contol task question label'
+                         ' from validate correctness control tasks'
+                         f' node error: {ex}')
         return None

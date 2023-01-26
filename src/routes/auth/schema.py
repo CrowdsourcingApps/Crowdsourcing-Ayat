@@ -17,6 +17,13 @@ class UserRoleEnum(str, Enum):
 
 class UserUpdateSchema(BaseModel):
     user_email: str
+
+
+VALIDATE_CORRECTNESS_THRESHOLD = 0.7
+
+
+class UserOutSchema(UserUpdateSchema):
+    user_id: str
     user_role: UserRoleEnum = UserRoleEnum.Annotator
 
     # number of validate correctness tasks that user solved
@@ -38,13 +45,6 @@ class UserUpdateSchema(BaseModel):
 
     validate_transcription_solved_control_no: int = 0
     validate_transcription_solved_control_correct_no: int = 0
-
-
-VALIDATE_CORRECTNESS_THRESHOLD = 0.8
-
-
-class UserOutSchema(UserUpdateSchema):
-    user_id: str
     validate_correctness_answered_questions_test: List[str] = []
 
     def validate_correctness_accuracy(self):

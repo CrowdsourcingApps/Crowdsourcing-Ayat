@@ -1,5 +1,7 @@
 from enum import Enum
 
+from pydantic import BaseModel
+
 from src.routes.control_tasks.schema import CommonControltask
 
 
@@ -12,4 +14,9 @@ class LabelEnum(str, Enum):
 
 
 class ValidateCorrectnessControlTask(CommonControltask):
+    label: LabelEnum
+
+
+class ValidateCorrectnessExamAnswers(BaseModel):
+    recording_id: str
     label: LabelEnum

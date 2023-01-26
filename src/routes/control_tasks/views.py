@@ -4,14 +4,21 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.dependencies.auth import firebase_authentication
 from src.routes.auth.handler import get_participant
+from src.routes.auth.helper import update_participants_validate_correctness_no
 from src.routes.auth.schema import UserRoleEnum
-from src.routes.control_tasks.validate_correctness.handler import (
-    Add_validate_correctness_control_tasks_list,
-    get_validate_correctness_entrance_exam_list)
-from src.routes.control_tasks.validate_correctness.schema import \
-    ValidateCorrectnessControlTask
+from src.routes.control_tasks.validate_correctness.handler import \
+    Add_validate_correctness_control_tasks_list
+from src.routes.control_tasks.validate_correctness.handler import \
+    get_control_task_question_label as correct_label
+from src.routes.control_tasks.validate_correctness.handler import \
+    get_validate_correctness_entrance_exam_list
+from src.routes.control_tasks.validate_correctness.schema import (
+    ValidateCorrectnessControlTask, ValidateCorrectnessExamAnswers)
 
 router = APIRouter()
+ENTRANCE_EXAM_NO = 7
+ALLOWED_ATTEMPTS = 5
+VALIDATE_CORRECTNESS_THRESHOLD = 0.7
 
 
 @router.post('/validate_correctness',
@@ -22,7 +29,8 @@ router = APIRouter()
 async def add_validate_correctness_control_tasks(
         control_tasks: List[ValidateCorrectnessControlTask],
         user_id=Depends(firebase_authentication)) -> list:
-    """ Add list of control tasks related to validate correctness task type"""
+    """This method allows Admin to add list of control tasks related to
+       validate correctness task type"""
     #  check that user is admin
     user = get_participant(user_id)
     if user.user_role != UserRoleEnum.Admin:
@@ -60,7 +68,8 @@ async def get_validate_correctness_entrance_exam(
         )
     # the user can take the test if number of attempts less than five
     # => 7 questions * 5 attempts = 35 question
-    if len(user.validate_correctness_answered_questions_test) == 35:
+    questions_no = ENTRANCE_EXAM_NO*ALLOWED_ATTEMPTS
+    if len(user.validate_correctness_answered_questions_test) == questions_no:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Participant not allowed to attempt more than 5 times',
@@ -74,9 +83,42 @@ async def get_validate_correctness_entrance_exam(
             detail='No tasks available for entrance test',
         )
     # case of remain questions less than 7
-    if len(control_tasks) < 7:
+    if len(control_tasks) < ENTRANCE_EXAM_NO:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='No tasks available for entrance test. please try later',
         )
     return control_tasks
+
+
+@router.post('/validate_correctness/answers',
+             status_code=200,
+             responses={401: {'description': 'UNAUTHORIZED'},
+                        400: {'description': 'BAD REQUEST'}})
+async def add_validate_correctness_entrance_exam_answers(
+        exam_answers: List[ValidateCorrectnessExamAnswers],
+        user_id=Depends(firebase_authentication)) -> list:
+    """This method allows to calculate accuracy of the user and determine
+     if they pass or fail"""
+    if len(exam_answers) != ENTRANCE_EXAM_NO:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Participant's answers should be equal to"
+                   f' {ENTRANCE_EXAM_NO}',
+        )
+    # calculate number of correct
+    correct_answers = sum([1 for e in exam_answers
+                           if correct_label(e.recording_id) == e.label])
+
+    questions_ids = [e.recording_id for e in exam_answers]
+
+    # store the data for accuracy
+    result = update_participants_validate_correctness_no(
+        user_id, ENTRANCE_EXAM_NO, correct_answers, questions_ids)
+    if result:
+        return {'message': 'Data was uploaded successfully to firbase.'}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Data was not saved successfully',
+        )
