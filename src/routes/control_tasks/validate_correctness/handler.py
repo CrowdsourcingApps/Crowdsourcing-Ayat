@@ -7,7 +7,12 @@ from src.dependencies import db
 from src.routes.control_tasks.validate_correctness.schema import LabelEnum
 from src.routes.control_tasks.validate_correctness.schema import \
     ValidateCorrectnessControlTask as VCCT
+from src.settings import settings
 from src.settings.logging import logger
+
+TEST_BUCKET_PATH = (
+    settings.MINIO_SERVER+'/'+settings.MINIO_TEST_TASKS_BUCKET+'/'
+)
 
 
 def Add_validate_correctness_control_tasks_list(
@@ -59,6 +64,11 @@ def get_validate_correctness_entrance_exam_list(
 
         try:
             obj_list = [VCCT(**test) for test in test_questions]
+            # add the whole path for the file name
+            for i, obj in enumerate(obj_list):
+                obj_list[i].audio_file_name = (
+                    TEST_BUCKET_PATH + obj.audio_file_name
+                )
             return obj_list
         except Exception as ex:
             logger.exception('Parsing firebase VCCT list to'
