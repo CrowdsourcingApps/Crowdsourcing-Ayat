@@ -15,6 +15,7 @@ class AudioMetaData(AudioMetaDataIn):
     duration_ms: int
     create_date: datetime = None
     surra_aya: str = None
+    transfared: bool = None
 
 
 class UploadOutSchema(BaseModel):

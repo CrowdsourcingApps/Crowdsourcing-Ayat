@@ -31,4 +31,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: raghadsy/crowdsourcingayat
+        tags: raghadsy/crowdsourcingayat:${{ github.sha }}
