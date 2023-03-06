@@ -72,7 +72,8 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
                                         surra_number=surra_number,
                                         aya_number=aya_number,
                                         create_date=datetime.now(),
-                                        surra_aya=surra_aya)
+                                        surra_aya=surra_aya,
+                                        transfared=False)
         audio_dict = dict(audio_meta_data)
         audio_dict['create_date'] = str(audio_dict['create_date'])
         if add_audio(file_id, audio_dict):
