@@ -37,7 +37,7 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
     # limit audio file length and throw exception if it's too long
     # Standarize audio file: wav, 16000Hz, one channel
     max_audio_length = 30000       # 30 sec
-    min_audio_length = 500             # 0.5 sec
+    min_audio_length = 500         # 0.5 sec
     try:
         audio_length_ms, wav_file = process_audio(audio_file.file)
     except Exception as ex:
