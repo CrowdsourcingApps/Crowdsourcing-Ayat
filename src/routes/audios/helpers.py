@@ -6,20 +6,21 @@ from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from scipy.io import wavfile
 
-from src.dependencies import minio_client
-from src.settings import settings
+from src.dependencies import blob_service_client, container_name
 from src.settings.logging import logger
 
 
 def upload_file(new_file_name: str, audio_file_path: str) -> bool:
     """ Upload file to minio server"""
     try:
-        minio_client.fput_object(
-            settings.MINIO_BUCKET_NAME, new_file_name, audio_file_path
-        )
+        blob_client = blob_service_client.get_blob_client(
+            container=container_name,
+            blob=new_file_name)
+        with open(audio_file_path, 'rb') as data:
+            blob_client.upload_blob(data)
         return True
     except Exception as ex:
-        logger.exception('[MinIO] - Upload audio file to MinIo server'
+        logger.exception('[Azure blob] - Upload audio file to Azure blob'
                          f' error: {ex}')
         return False
 
