@@ -3,10 +3,10 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
-from src.routes.audios.handler import add_audio
+from src.routes.audios.handler import add_audio, get_audio_label
 from src.routes.audios.helpers import process_audio, upload_file
 from src.routes.audios.schema import (AudioMetaData, AudioMetaDataIn,
-                                      UploadOutSchema)
+                                      AudioStateSchema, UploadOutSchema)
 from src.routes.users.handler import get_user
 from src.settings.logging import logger
 
@@ -87,3 +87,25 @@ async def Add_new_audio(audio_meta_data: AudioMetaDataIn = Depends(),
         status_code=status.HTTP_400_BAD_REQUEST,
         detail='audio file was not uploaded successfully',
     )
+
+
+@router.get('/label',
+            response_model=AudioStateSchema,
+            status_code=200,
+            responses={401: {'description': 'UNAUTHORIZED'},
+                       400: {'description': 'BAD REQUEST'},
+                       404: {'description': 'NOT FOUND'}})
+async def Get_audio_label(audio_file_name: str):
+    if not audio_file_name.endswith('.wav'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Invalid audio file name',
+        )
+    audio_file_Id = audio_file_name.split('.wav')[0]
+    label = get_audio_label(audio_file_Id)
+    if label == 'not_found':
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='There is no audio with this name',
+        )
+    return {'label': label}
