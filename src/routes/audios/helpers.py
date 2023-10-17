@@ -11,7 +11,7 @@ from src.settings.logging import logger
 
 
 def upload_file(new_file_name: str, audio_file_path: str) -> bool:
-    """ Upload file to minio server"""
+    """ Upload file to Azure blob"""
     try:
         blob_client = blob_service_client.get_blob_client(
             container=container_name,
