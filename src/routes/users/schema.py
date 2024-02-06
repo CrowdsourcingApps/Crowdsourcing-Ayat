@@ -52,3 +52,4 @@ class UserMetaDataCreate(BaseModel):
 class UserMetaData(UserMetaDataCreate):
     create_date: datetime = None
     client_id: str
+    application_id: str = None
