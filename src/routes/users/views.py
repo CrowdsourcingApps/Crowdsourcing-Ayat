@@ -1,9 +1,10 @@
 import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from starlette.responses import Response
 
+from src.dependencies.auth import firebase_authentication
 from src.routes.users.handler import add_user, get_user, update_user
 from src.routes.users.schema import UserMetaData, UserMetaDataCreate
 
@@ -15,10 +16,11 @@ router = APIRouter()
              response_model=UserMetaData,
              responses={401: {'description': 'UNAUTHORIZED'},
                         400: {'description': 'BAD REQUEST'}})
-async def Add_new_reciter(userIn: UserMetaDataCreate):
-
+async def Add_new_reciter(userIn: UserMetaDataCreate,
+                          app=Depends(firebase_authentication)):
+    app_id = app['user_id']
     user = UserMetaData(**userIn.dict(), create_date=datetime.now(),
-                        client_id=str(uuid.uuid4()))
+                        client_id=str(uuid.uuid4()), application_id=app_id)
     user_dict = dict(user)
     ''' The next line is to avoid  the TypeError:
                 "Object of type datetime is not JSON serializable"'''
@@ -51,7 +53,8 @@ async def update_reciter_info(userId: str, userIn: UserMetaDataCreate):
     user_dict['client_id'] = user.client_id
     result = update_user(user_dict)
     user = UserMetaData(**userIn.dict(), create_date=user.create_date,
-                        client_id=user.client_id)
+                        client_id=user.client_id,
+                        application_id=user.application_id)
     if result:
         return user
     else:
